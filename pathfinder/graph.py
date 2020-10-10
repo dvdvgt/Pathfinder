@@ -120,6 +120,7 @@ class Graph:
                     dist[node] = float('inf')
                     prev[node] = None
                 queue.append(node)
+                
         # Sort queue so that node with lowest distance is at the lowest index
         queue.sort(key=lambda node: dist[node], reverse=True)
 
@@ -135,7 +136,7 @@ class Graph:
 
             for neighbor in crrnt.get_neighbors(self).values():
                 # Skip nodes that either cannot be visited or already have been visited
-                if neighbor.state == State.CLOSED or neighbor.state == State.BARRIER:
+                if neighbor not in queue or neighbor.state == State.BARRIER:
                     continue
                 # Mark nodes as open
                 if neighbor != self.end and neighbor != self.start:

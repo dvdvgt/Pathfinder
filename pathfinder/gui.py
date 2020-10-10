@@ -17,7 +17,7 @@ class GUI:
         Total number of columns starting at 0.
     width: int
         Width of the window.
-    cell_width: int
+    vertex_width: int
         Width of cell representing a node in a graph.
     graph: Graph
         Containing all nodes of graph plus methods for managing the graph.
@@ -38,11 +38,11 @@ class GUI:
         self.rows: int = rows
         self.columns: int = rows
         self.width: int = width
-        self.vertix_width: int = width // rows
-        self.graph: Graph = Graph(self.rows, self.vertix_width)
+        self.vertex_width: int = round(width / rows)
+        self.graph: Graph = Graph(self.rows, self.vertex_width)
 
         self.win = pygame.display.set_mode((width, width))
-        pygame.display.set_caption("Pathfinding")
+        pygame.display.set_caption("Pathfinder")
 
     def draw_grid(self):
         """
@@ -52,15 +52,15 @@ class GUI:
             pygame.draw.line(
                 self.win,
                 Colour.GREY,
-                (0, i * self.vertix_width),
-                (self.width, i * self.vertix_width)
+                (0, i * self.vertex_width),
+                (self.width, i * self.vertex_width)
             )
             for j in range(self.columns):
                 pygame.draw.line(
                     self.win,
                     Colour.GREY,
-                    (j * self.vertix_width, 0),
-                    (j * self.vertix_width, self.width)
+                    (j * self.vertex_width, 0),
+                    (j * self.vertex_width, self.width)
                 )
 
     def draw(self):
@@ -75,7 +75,7 @@ class GUI:
                 pygame.draw.rect(
                     self.win,
                     cell.colour,
-                    (cell.x, cell.y, self.vertix_width, self.vertix_width)
+                    (cell.x, cell.y, self.vertex_width, self.vertex_width)
                 )
         self.draw_grid()
 
@@ -166,11 +166,6 @@ class GUI:
             containing the row and column of the selected cell.
         """
         x, y = pos
-        row = y // self.vertix_width
-        col = x // self.vertix_width
+        row = y // self.vertex_width
+        col = x // self.vertex_width
         return (row, col)
-
-
-if __name__ == "__main__":
-    window = GUI(40, 800)
-    window.loop()

@@ -37,14 +37,14 @@ class Vertex:
         width: int
             Width of the cell which represents a vertex.
         """
-        self.row = row
-        self.column = column
-        self.x = column * width
-        self.y = row * width
-        self.width = width
+        self.row: int = row
+        self.column: int = column
+        self.x: int = column * width
+        self.y: int = row * width
+        self.width: int = width
 
-        self.colour = Colour.WHITE
-        self.state = State.EMPTY
+        self.colour: Colour = Colour.WHITE
+        self.state: State = State.EMPTY
 
     def set_start(self):
         """Marks the vertex as the starting point by colouring it red."""
