@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 from util.colour import Colour
 from util.state import State
-from graph import Graph
 
 
 class Vertex:
     """
     Class representing a vertex in graph/grid.
-    
+
     Attributes
     ----------
     row: int
@@ -82,7 +81,7 @@ class Vertex:
         self.colour = Colour.WHITE
         self.state = State.EMPTY
 
-    def get_neighbors(self, graph: Graph) -> dict:
+    def get_neighbors(self, graph) -> dict:
         """
         Returns all neighbors of the current vertex.
 
@@ -91,7 +90,7 @@ class Vertex:
         graph: Graph
             Graph of which the current vertex is part of to determine
             its neighbors.
-        
+
         Returns
         -------
         dict

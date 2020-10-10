@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import pygame
 from util.colour import Colour
+from util.state import State
 from graph import Graph
-from solver import dijkstra
 
 
 class GUI:
@@ -81,7 +81,7 @@ class GUI:
 
         pygame.display.update()
 
-    def event_handler(self) -> bool:
+    def handle_events(self) -> bool:
         """
         Responsible for handling all mouse and key events and calling
         the appropiate functions.
@@ -93,43 +93,61 @@ class GUI:
 
             # Left click
             if pygame.mouse.get_pressed()[0]:
+                # Determine clicked node
                 pos = pygame.mouse.get_pos()
                 row, col = self.get_click_pos(pos)
                 node = self.graph.grid[row][col]
 
+                # Set start node
                 if not self.graph.start and node != self.graph.end:
                     self.graph.set_start(node)
+                # Set end node
                 elif not self.graph.end and node != self.graph.start:
                     self.graph.set_end(node)
+                    # Check whether the shortest path needs to be redrawn
+                    if self.graph.paths:
+                        self.graph.mark_path(False)
+                # Set barrier
                 elif node != self.graph.end and node != self.graph.start:
                     node.set_barrier()
 
             # Right click
             elif pygame.mouse.get_pressed()[2]:
+                # Determine clicked node
                 pos = pygame.mouse.get_pos()
                 row, col = self.get_click_pos(pos)
                 node = self.graph.grid[row][col]
 
-                node.reset()
-                if node == self.graph.start:
-                    self.graph.start = None
-                elif node == self.graph.end:
-                    self.graph.end = None
-
-            # Reset with ESC
+                # Determine if node can be deleted/reseted
+                if (
+                    node.state == State.END or 
+                    (not self.graph.paths and node.state == State.BARRIER) or
+                    (not self.graph.paths and node.state == State.START)
+                    ):
+                    node.reset()
+                    if node == self.graph.start:
+                        self.graph.start = None
+                    elif node == self.graph.end:
+                        self.graph.mark_path(True)
+                        self.graph.end = None
+                        node.set_closed()
+                
+            # Manage key press events
             elif event.type == pygame.KEYDOWN:
+                # Reset with ESC
                 if event.key == pygame.K_ESCAPE:
                     self.graph.reset()
+                # Start algorithm with space
                 elif self.graph.start and self.graph.end and event.key == pygame.K_SPACE:
-                    dijkstra(self.graph, self)
-
+                    self.graph.dijkstra(self)
+                    self.graph.mark_path(False)
         return True
 
     def loop(self):
         """
         Main loop of the window.
         """
-        while self.event_handler():
+        while self.handle_events():
             self.draw()
         pygame.quit()
 
