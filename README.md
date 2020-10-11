@@ -10,10 +10,14 @@
 
 # About
 
-This programm aims to visualize how the Dijkstra and A* algorithms work to find the shortest path between two nodes in a graph. 
+This programm aims to visualize how the Dijkstra and A* algorithms work to find the shortest path between two nodes in a graph.
 
 ## Dijkstra
 
+> Dijkstra's algorithm (or Dijkstra's Shortest Path First algorithm, SPF algorithm)[4] is an algorithm for finding the shortest paths between nodes in a graph [...] ([Wikipedia: Dijkstra's Algorithm](https://en.wikipedia.org/wiki/Dijkstra's_algorithm))
+
+The algorithm may be used either for finding the shortest path between a given source and destination in graph or for finding all shortest paths from one source to all other nodes. 
+One popular application of this algorithm is the [OSPF](https://en.wikipedia.org/wiki/Open_Shortest_Path_First) routing protocol used in networking as a interior gateway protocol by the routers of one network to determine the shortest path to all other routers.
 
 ## A*
 
@@ -24,7 +28,7 @@ Yet to be implemented.
 1. `git clone https://github.com/dvdvgt/shortest-path-visualizer.git`
 2. `cd shortest-path-visualizer`
 3. `pip install --user -r requirements.txt`
-3. `python pathfinder/main.py`
+3. `python -m pathfinder.main`
 
 ## Dependencies
 - [pygame](https://www.pygame.org)
@@ -33,7 +37,8 @@ Yet to be implemented.
 
 ## Basics
 
-- Press the **left mouse button** to set the start, destination and barriers.
+- Press the **left mouse button** to set the start and barriers.
+- Press the **middle mouse button** to set a optional destination node.
 - Press the **right mouse button** to reset a node.
 - Press **ESC** to reset all nodes.
 - Press the **spacebar** to start the algorithm (so far only the dijkstra algorithm has been implemented).
