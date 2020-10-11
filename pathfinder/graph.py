@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import pygame
-from vertex import Vertex
-from util.state import State
+from pathfinder.vertex import Vertex
+from pathfinder.util.state import State
 
 
 class Graph:

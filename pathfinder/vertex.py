@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
-from util.colour import Colour
-from util.state import State
-
+from pathfinder.util.colour import Colour
+from pathfinder.util.state import State
 
 class Vertex:
     """

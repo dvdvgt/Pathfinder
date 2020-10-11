@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 import pygame
-from util.colour import Colour
-from util.state import State
-from graph import Graph
+from pathfinder.util.colour import Colour
+from pathfinder.util.state import State
+from pathfinder.graph import Graph
 
 
 class GUI:

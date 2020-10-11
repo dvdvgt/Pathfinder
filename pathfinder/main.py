@@ -1,4 +1,4 @@
-from gui import GUI
+from pathfinder.gui import GUI
 
 if __name__ == "__main__":
     window = GUI(40, 800)
