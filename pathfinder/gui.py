@@ -102,7 +102,7 @@ class GUI:
                 if not self.graph.start and node != self.graph.end:
                     self.graph.set_start(node)
                 # Set barrier
-                elif node != self.graph.end and node != self.graph.start:
+                elif node != self.graph.end and node != self.graph.start and not self.graph.paths:
                     node.set_barrier()
 
             elif pygame.mouse.get_pressed()[1]:
@@ -144,8 +144,16 @@ class GUI:
                 # Reset with ESC
                 if event.key == pygame.K_ESCAPE:
                     self.graph.reset()
-                # Start algorithm with space
-                elif self.graph.start and event.key == pygame.K_SPACE:
+                # Partly reset
+                elif event.key == pygame.K_c:
+                    self.graph.reset_discovered()
+                # Start A* algorithm
+                elif self.graph.start and self.graph.end and event.key == pygame.K_a:
+                    self.graph.a_star(self)
+                    if self.graph.end:
+                        self.graph.mark_path(False)
+                # Start Dijkstra algorithm
+                elif self.graph.start and event.key == pygame.K_d:
                     self.graph.dijkstra(self)
                     if self.graph.end:
                         self.graph.mark_path(False)

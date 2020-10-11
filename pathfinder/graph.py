@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 import pygame
-from queue import PriorityQueue
+from pathfinder.util.priority_queue import PriorityQueue
 import time
+import math
 from pathfinder.vertex import Vertex
 from pathfinder.util.state import State
 
@@ -96,6 +97,14 @@ class Graph:
         v.set_end()
         self.end = v
 
+    def __get_discovered(self):
+        nodes: list = []
+        for rows in self.grid:
+            for node in rows:
+                if node.state in [State.OPEN, State.CLOSED, State.PATH]:
+                    nodes.append(node)
+        return nodes
+
     def reset(self):
         """
         Resets the graph by reseting start, destination and all vertex objects.
@@ -104,6 +113,11 @@ class Graph:
         self.end = None
         self.paths = {}
         self.grid = self.init_grid()
+
+    def reset_discovered(self):
+        self.paths = {}
+        for node in self.__get_discovered():
+            node.reset()
 
     def dijkstra(self, gui) -> dict:
         """
@@ -174,6 +188,83 @@ class Graph:
             gui.draw()
 
         self.paths = prev
+
+    def a_star(self, gui):
+        # Open priority queue
+        open_queue: PriorityQueue = PriorityQueue()
+
+        # Dict containing shortest path
+        prev: dict = {}
+
+        # For node n, gScore[n] is the cost of the cheapest path from start to n currently known.
+        gScore: dict = {node: float('inf') for rows in self.grid for node in rows}
+        gScore[self.start] = 0
+
+        # For node n, fScore[n] := gScore[n] + h(n). fScore[n] represents our current best guess as to
+        # how short a path from start to finish can be if it goes through n.
+        fScore: dict = gScore.copy()
+        fScore[self.start] = self.__manhattan_distance(self.start)
+
+        # Add source node to the queue
+        open_queue.put((fScore[self.start], time.time(), self.start))
+
+        while not open_queue.empty():
+            # Pop node with lowest f-score and explore its neighbors
+            current: Vertex = open_queue.get()[2]
+            # If the destination has been reached the shortest path has been found
+            if current == self.end:
+                break
+            
+            # Explore the current node's neighbors
+            for neighbor in current.get_neighbors(self).values():
+                # Barrierer nodes are not visitable and therefore cannot be considered
+                # for the shortest path
+                if neighbor.state == State.BARRIER:
+                    continue
+                # Since this is a grid like graph where all distances to neighbors are the
+                # same 1 is chosen as distance between the current and neighbor node
+                alt_dist = gScore[current] + 1
+
+                # Update the g score if the distance via the neighbor is lower than previously known
+                if alt_dist < gScore[neighbor]:
+                    prev[neighbor] = current
+                    gScore[neighbor] = alt_dist
+                    fScore[neighbor] = gScore[neighbor] + self.__manhattan_distance(neighbor)
+
+                    # If the node is not already in the queue add it for consideration in the
+                    # following iterations
+                    if not open_queue.is_element(neighbor, key=lambda x: x[2]):
+                        open_queue.put((fScore[neighbor], time.time(), neighbor))
+                        # Set the neighbor as open
+                        if neighbor != self.end and neighbor != self.start:
+                            neighbor.set_open()
+            # Mark the current node as closed however it might be re-opened later on
+            if current != self.start and current != self.end:
+                current.set_closed()
+                
+            gui.draw()
+        self.paths = prev
+
+    def __euclidean_distance(self, node: Vertex):
+        return math.sqrt(
+            (node.x - self.end.x) ** 2 + (node.y - self.end.y) ** 2
+        )
+
+    def __manhattan_distance(self, node: Vertex) -> int:
+        """
+        Calculates the manhattan distance between a given node and the destination of
+        the current graph.
+
+        Parameters
+        ----------
+        node: Vertex
+
+        Returns
+        -------
+        int
+            Distance between given node and the graph's destination node.
+        """
+        return abs(node.x - self.end.x) + abs(node.y - self.end.y)
 
     def mark_path(self, delete: bool):
         """

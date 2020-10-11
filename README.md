@@ -6,7 +6,9 @@
 1. [About](#About)
 2. [Installation](#Installation)
 3. [Usage](#Usage)
+4. [To-do](#To-do)
 4. [License](#License)
+5. [Examples](#Examples)
 
 # About
 
@@ -21,7 +23,7 @@ One popular application of this algorithm is the [OSPF](https://en.wikipedia.org
 
 ## A*
 
-Yet to be implemented.
+> A* (pronounced "A-star") is a graph traversal and path search algorithm, which is often used in many fields of computer science due to its completeness, optimality, and optimal efficiency. ([Wikipedia: A* search algorithm]()https://en.wikipedia.org/wiki/A*_search_algorithm)
 
 # Installation
 
@@ -35,21 +37,27 @@ Yet to be implemented.
 
 # Usage
 
-## Basics
-
+## Setting source, destination and barriers
 - Press the **left mouse button** to set the start and barriers.
-- Press the **middle mouse button** to set a optional destination node.
-- Press the **right mouse button** to reset a node.
+- Press the **middle mouse button** to set an optional destination node (mandatory for A* though).
+
+## Reset
+- Press the **right mouse button** to reset/delete a node.
 - Press **ESC** to reset all nodes.
-- Press the **spacebar** to start the algorithm (so far only the dijkstra algorithm has been implemented).
+- Press **C** to reset all nodes except start, end and barriers.
 
-## Displaying SP to different destination
+## Starting an algorithm
+- Press **A** to start the A* algorithm.
+- Press **D** to start the Dijkstra algorithm.
 
-After the shortest path to the destination has been found you may reassign the destination to a different, already discovered (coloured grey) node to show the shortest path to that node as can be seen in the example GIF.
+## Changing Destination
+
+After the shortest path to the destination has been found you may reassign the destination to a different, already discovered (coloured grey or blue) node to show the shortest path to that node (as can be seen in the example GIF).
 
 # To-do
-* [ ] Implement A* algorithm
-* [ ] Write tests
+* [X] Implement A* algorithm.
+* [ ] Write tests.
+* [ ] Implement a maze generator.
 
 # License
 
@@ -67,3 +75,12 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
+# Examples
+
+<p>
+<img src="dijkstra.gif" width="350">
+</p>
+
+Dijkstra algorithm in action.
+
