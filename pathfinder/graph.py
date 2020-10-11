@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import pygame
+from pathfinder.util.priority_queue import PriorityQueue
+import time
 from pathfinder.vertex import Vertex
 from pathfinder.util.state import State
 
@@ -109,8 +111,8 @@ class Graph:
         dist: dict = {}
         # Dictionary with pairs of (vertix: previous_vertix)
         prev: dict = {}
-        # Containing all yet to visit nodes
-        queue: list = []
+        # Containing all yet to visit nodes.
+        queue: PriorityQueue = PriorityQueue()
 
         # Init dicts and queue
         dist[self.start] = 0
@@ -119,38 +121,49 @@ class Graph:
                 if node != self.start:
                     dist[node] = float('inf')
                     prev[node] = None
-                queue.append(node)
+                """
+                if node.state != State.BARRIER:
+                    queue.append(node)
+                """
                 
         # Sort queue so that node with lowest distance is at the lowest index
-        queue.sort(key=lambda node: dist[node], reverse=True)
+        #queue.sort(key=lambda node: dist[node], reverse=True)
+        queue.push((dist[self.start], time.time(), self.start))
 
         while queue:
-            crrnt: Vertex = queue.pop()
+            # Get element with minimum distance from the queue.
+            crrnt: Vertex = queue.pop()[2]
+
+            # Mark as visited
+            if crrnt != self.start and crrnt != self.end:
+                crrnt.set_closed()
 
             # If the end is reached the shortest path has been found
             if crrnt == self.end:
                 break
-            
-            if crrnt != self.start and crrnt != self.end:
-                crrnt.set_closed()
 
+            # Discover neighbors:
             for neighbor in crrnt.get_neighbors(self).values():
+
                 # Skip nodes that either cannot be visited or already have been visited
-                if neighbor not in queue or neighbor.state == State.BARRIER:
+                if neighbor.state == State.BARRIER or neighbor.state == State.CLOSED:
                     continue
+
                 # Mark nodes as open
                 if neighbor != self.end and neighbor != self.start:
                     neighbor.set_open()
+
                 # Check whether there's a faster path by comparing known
                 # to newly discovered distances
                 alt_dist = dist[crrnt] + 1
                 if alt_dist < dist[neighbor]:
                     dist[neighbor] = alt_dist
                     prev[neighbor] = crrnt
+                    # Add newly discovered neighbor to the queue.
+                    queue.push((dist[neighbor], time.time(), neighbor))
+
             # Redraw the grid
             gui.draw()
-            # Sort the queue again to account for changes in distances
-            queue.sort(key=lambda node: dist[node], reverse=True)
 
         self.paths = prev
 
