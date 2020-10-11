@@ -101,15 +101,21 @@ class GUI:
                 # Set start node
                 if not self.graph.start and node != self.graph.end:
                     self.graph.set_start(node)
-                # Set end node
-                elif not self.graph.end and node != self.graph.start:
+                # Set barrier
+                elif node != self.graph.end and node != self.graph.start:
+                    node.set_barrier()
+
+            elif pygame.mouse.get_pressed()[1]:
+                # Determine clicked node
+                pos = pygame.mouse.get_pos()
+                row, col = self.get_click_pos(pos)
+                node = self.graph.grid[row][col]
+
+                if not self.graph.end and node != self.graph.start and node.state != State.BARRIER:
                     self.graph.set_end(node)
                     # Check whether the shortest path needs to be redrawn
                     if self.graph.paths:
                         self.graph.mark_path(False)
-                # Set barrier
-                elif node != self.graph.end and node != self.graph.start:
-                    node.set_barrier()
 
             # Right click
             elif pygame.mouse.get_pressed()[2]:
@@ -128,9 +134,10 @@ class GUI:
                     if node == self.graph.start:
                         self.graph.start = None
                     elif node == self.graph.end:
-                        self.graph.mark_path(True)
+                        if self.graph.paths:
+                            self.graph.mark_path(True)
+                            node.set_closed()
                         self.graph.end = None
-                        node.set_closed()
                 
             # Manage key press events
             elif event.type == pygame.KEYDOWN:
@@ -138,9 +145,10 @@ class GUI:
                 if event.key == pygame.K_ESCAPE:
                     self.graph.reset()
                 # Start algorithm with space
-                elif self.graph.start and self.graph.end and event.key == pygame.K_SPACE:
+                elif self.graph.start and event.key == pygame.K_SPACE:
                     self.graph.dijkstra(self)
-                    self.graph.mark_path(False)
+                    if self.graph.end:
+                        self.graph.mark_path(False)
         return True
 
     def loop(self):
