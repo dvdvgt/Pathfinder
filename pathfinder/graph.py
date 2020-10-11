@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import pygame
-from pathfinder.util.priority_queue import PriorityQueue
+from queue import PriorityQueue
 import time
 from pathfinder.vertex import Vertex
 from pathfinder.util.state import State
@@ -106,6 +106,17 @@ class Graph:
         self.grid = self.init_grid()
 
     def dijkstra(self, gui) -> dict:
+        """
+        Finds the shortest path(s) to either one destination or to all other nodes
+        starting at a source node.
+        This implementation uses a priority queue for keeping track of yet to visit
+        nodes. At first only the source node is in the queue. New nodes will be added
+        after they have been discovered  (are neighbors of visited nodes).
+
+        gui
+            GUI object for accessing the drawing method to redraw the window.
+        """
+
         # Containing pairs of vertix and distance to the starting vertix where
         # the vertix is the key and the distance the key.
         dist: dict = {}
@@ -121,18 +132,15 @@ class Graph:
                 if node != self.start:
                     dist[node] = float('inf')
                     prev[node] = None
-                """
-                if node.state != State.BARRIER:
-                    queue.append(node)
-                """
                 
-        # Sort queue so that node with lowest distance is at the lowest index
-        #queue.sort(key=lambda node: dist[node], reverse=True)
-        queue.push((dist[self.start], time.time(), self.start))
+        # Add the starting node to the queue with the distance as metric. In case of
+        # a tie the current time will be used as a tie breaker so that the least recently
+        # added element wins.
+        queue.put((dist[self.start], time.time(), self.start))
 
-        while queue:
+        while not queue.empty():
             # Get element with minimum distance from the queue.
-            crrnt: Vertex = queue.pop()[2]
+            crrnt: Vertex = queue.get()[2]
 
             # Mark as visited
             if crrnt != self.start and crrnt != self.end:
@@ -160,7 +168,7 @@ class Graph:
                     dist[neighbor] = alt_dist
                     prev[neighbor] = crrnt
                     # Add newly discovered neighbor to the queue.
-                    queue.push((dist[neighbor], time.time(), neighbor))
+                    queue.put((dist[neighbor], time.time(), neighbor))
 
             # Redraw the grid
             gui.draw()
