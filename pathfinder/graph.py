@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import pygame
 from pathfinder.util.priority_queue import PriorityQueue
+from queue import LifoQueue
 import time
 import math
+import random
 from pathfinder.vertex import Vertex
 from pathfinder.util.state import State
 
@@ -229,7 +231,7 @@ class Graph:
                 if alt_dist < gScore[neighbor]:
                     prev[neighbor] = current
                     gScore[neighbor] = alt_dist
-                    fScore[neighbor] = gScore[neighbor] + self.__manhattan_distance(neighbor)
+                    fScore[neighbor] = gScore[neighbor] + self.__euclidean_distance(neighbor)
 
                     # If the node is not already in the queue add it for consideration in the
                     # following iterations
@@ -245,7 +247,19 @@ class Graph:
             gui.draw()
         self.paths = prev
 
-    def __euclidean_distance(self, node: Vertex):
+    def __euclidean_distance(self, node: Vertex) -> float:
+        """
+        Calculates the euclidean distance between a given node and the graph's destination.
+
+        Parameters
+        ----------
+        node: Vertex
+
+        Returns
+        -------
+        float
+            Euclidean distance between given and destination node.
+        """
         return math.sqrt(
             (node.x - self.end.x) ** 2 + (node.y - self.end.y) ** 2
         )
@@ -275,11 +289,57 @@ class Graph:
         graph: Graph
             Graph object of the current graph.
         """
-        def marker(current: Vertex):
-            if current != self.start:
-                if delete:
-                    current.set_closed()
-                else:
-                    current.set_path()
-                marker(self.paths[current])
-        marker(self.paths[self.end])
+        current: Vertex = self.paths[self.end]
+        while current != self.start:
+            if delete:
+                current.set_closed()
+            else:
+                current.set_path()
+            current = self.paths[current]
+
+    def __set_all_barriers(self):
+        """Marks all nodes in the grid as a barrier."""
+        for rows in self.grid:
+            for node in rows:
+                node.set_barrier()
+
+    def generate_maze(self, gui):
+        """
+        Iterative maze generator utilizing a LIFO queue for all unvisited cells.
+
+        Parameters
+        ----------
+        gui: GUI
+            GUI object used for updating the grid while the maze is being made.
+        """
+        self.__set_all_barriers()
+        # LIFO queue for mananging nodes with unvisited neighbors
+        queue: LifoQueue = LifoQueue()
+        # Select top left as start node
+        start: Vertex = self.grid[0][0]
+        queue.put(start)
+        start.reset()
+        gui.draw()
+        # While there are still nodes in the queue with unvisited neighbors. 
+        # This assures that all nodes will reachable.
+        while not queue.empty():
+            # Pop the last recently added node
+            current: Vertex = queue.get()
+            # List of all neighbors not yet visited
+            neighbors = [node for node in current.get_neighbors(self, 2).values() if node.state == State.BARRIER] 
+            # If there are still unvisited neighbors push current node into the queue again
+            if neighbors:
+                queue.put(current)
+                # Select a random neighbor and remove wall between current and neighbor
+                neighbor: Vertex = random.choice(neighbors)
+                wall_pos = (
+                    (current.row + neighbor.row) // 2, (current.column + neighbor.column) // 2
+                )
+                # Determine wall between current and neighbor to connect both by removing the wall.
+                wall: Vertex = self.grid[wall_pos[0]][wall_pos[1]]
+                wall.reset()
+                # Mark neighbor as open and put it in the queue to discover its neighbors.
+                neighbor.reset()
+                queue.put(neighbor)
+                # Redraw the grid
+                gui.draw()

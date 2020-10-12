@@ -77,7 +77,7 @@ class GUI:
                     cell.colour,
                     (cell.x, cell.y, self.vertex_width, self.vertex_width)
                 )
-        self.draw_grid()
+        #self.draw_grid()
 
         pygame.display.update()
 
@@ -157,6 +157,10 @@ class GUI:
                     self.graph.dijkstra(self)
                     if self.graph.end:
                         self.graph.mark_path(False)
+                # Generate maze
+                elif event.key == pygame.K_m:
+                    self.graph.reset()
+                    self.graph.generate_maze(self)
         return True
 
     def loop(self):

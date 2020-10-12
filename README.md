@@ -50,6 +50,9 @@ One popular application of this algorithm is the [OSPF](https://en.wikipedia.org
 - Press **A** to start the A* algorithm.
 - Press **D** to start the Dijkstra algorithm.
 
+## Generation a maze
+- Press **M** to start generating a maze.
+
 ## Changing Destination
 
 After the shortest path to the destination has been found you may reassign the destination to a different, already discovered (coloured grey or blue) node to show the shortest path to that node (as can be seen in the example GIF).
@@ -57,7 +60,7 @@ After the shortest path to the destination has been found you may reassign the d
 # To-do
 * [X] Implement A* algorithm.
 * [ ] Write tests.
-* [ ] Implement a maze generator.
+* [X] Implement a maze generator.
 
 # License
 

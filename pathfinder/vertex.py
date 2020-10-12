@@ -80,7 +80,7 @@ class Vertex:
         self.colour = Colour.WHITE
         self.state = State.EMPTY
 
-    def get_neighbors(self, graph) -> dict:
+    def get_neighbors(self, graph, dist: int = 1) -> dict:
         """
         Returns all neighbors of the current vertex.
 
@@ -89,6 +89,9 @@ class Vertex:
         graph: Graph
             Graph of which the current vertex is part of to determine
             its neighbors.
+        dist: int
+            Distance to choose which neighbors. 1 for direct neighbors, 2 for
+            neighbors of neighbors and so on.
 
         Returns
         -------
@@ -96,14 +99,14 @@ class Vertex:
             Neighbors of the current vertex.
         """
         neighbors: dict = {}
-        if self.row - 1 >= 0:
-            neighbors["upper"] = graph.grid[self.row - 1][self.column]
-        if self.row + 1 < graph.rows:
-            neighbors["lower"] = graph.grid[self.row + 1][self.column]
-        if self.column - 1 >= 0:
-            neighbors["left"] = graph.grid[self.row][self.column - 1]
-        if self.column + 1 < graph.columns:
-            neighbors["right"] = graph.grid[self.row][self.column + 1]
+        if self.row - dist >= 0:
+            neighbors["upper"] = graph.grid[self.row - dist][self.column]
+        if self.row + dist < graph.rows:
+            neighbors["lower"] = graph.grid[self.row + dist][self.column]
+        if self.column - dist >= 0:
+            neighbors["left"] = graph.grid[self.row][self.column - dist]
+        if self.column + dist < graph.columns:
+            neighbors["right"] = graph.grid[self.row][self.column + dist]
 
         return neighbors
 
