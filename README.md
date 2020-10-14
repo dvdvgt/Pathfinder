@@ -1,5 +1,5 @@
 <p align="center">
-<img src="dijkstra.gif" width="350">
+<img src="example.gif" width="350">
 </p>
 
 # Table of content
@@ -78,12 +78,3 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-# Examples
-
-<p>
-<img src="dijkstra.gif" width="350">
-</p>
-
-Dijkstra algorithm in action.
-
